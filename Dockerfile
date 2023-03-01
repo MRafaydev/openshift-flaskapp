@@ -1,15 +1,21 @@
-FROM python:3.8-slim-buster
+# Use an official Python runtime as a parent image
+FROM python:3.9-slim-buster
 
+# Set the working directory to /app
 WORKDIR /app
 
-COPY requirements.txt requirements.txt
+# Copy the requirements.txt file separately and install the dependencies
+COPY requirements.txt /tmp/
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
-# Install the Python packages with pip
-RUN pip3 install --no-cache-dir -r requirements.txt
+# Copy the rest of the code into the container at /app
+COPY . /app
 
-# Set up the cache directory and copy the application code
-RUN mkdir -p /root/.cache/pip
-COPY . .
+# Expose the port that the application will run on
+EXPOSE 5000
 
-# Start the Flask application
-CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
+# Define the environment variable for Flask
+ENV FLASK_APP=app.py
+
+# Run the command to start the Flask application
+CMD ["flask", "run", "--host=0.0.0.0"]
